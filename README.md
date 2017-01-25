@@ -1,5 +1,7 @@
 # Scoreboard
 
+-- A project to self build an electronic scoreboard for Wallingford Hockey Club --
+
 A commercial scoreboard appears to be out of reach - lets build one!!
 
 Requirements
