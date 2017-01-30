@@ -1,0 +1,18 @@
+this folder should hold the code to run te clock
+
+requirements
+
+set, start and stop multiple countdown timer 
+  minutes and seconds from 99 MINS
+  seconds and tenths from 99 SECS
+
+set real time clock
+ 12 AND 24 HOUR - Hours amd minutes
+ 
+ display one of the timers, clock or nothing
+ 
+ do we need to allow other scrolling data on the clock display?
+ MAYBE "GoAl!" or "CaRd"?
+ 
+ 
+ 
