@@ -25,3 +25,5 @@ Have a timer to show time left
 Indicator of 1st 2nd half or 1st 2nd 3rd 4th quarter
 
 As a stretch goal could be interrogated remotely ( not from the pitch side) to ask the current score
+
+see the wiki for more info and plans
