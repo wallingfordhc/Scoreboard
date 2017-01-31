@@ -1,2 +1,15 @@
 potential led options 
 https://www.aliexpress.com/store/product/20PCS-5050-SMD-5LEDs-LED-Module-White-Warm-White-Red-Green-Blue-Waterproof-Light-Advertising-lamp/1245436_1896141976.html?spm=2114.12010615.0.0.03Rka9
+
+
+should we use traditional LEDs or strips that could then be powered like a 7 segment display,
+or
+should we use addressable LED strips that could be daisy chained together and controlled via the data feed.
+
+how many?
+
+each SCORE requires 9 SEGMENTS ~ 1m of light
+
+clock requires 28 SEGMENTS and 2 DOTS ~ 3m of light
+
+so ~50 SEGMENTS or 5m or light
