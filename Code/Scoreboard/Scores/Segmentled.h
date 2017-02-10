@@ -6,3 +6,5 @@
 // may also allow for animated transitions from one score to annother
 //
 // REQUIRES LED STRIP TO BE SET OUT IN A STANDARD CONFIGURATION
+// 1. SINGLE STRIP - A SET NUMBER OF DAISY CHAINED LEDS PER SEGMENT FLOWWING FROM ONE TO ANOTHER AS PER STANDARD 7 SEGMENT LED CONFIGURATION
+// 2. double snake - a set number of daisy chained leds flowing top left to top left as a cirle and back filling in the central segment
