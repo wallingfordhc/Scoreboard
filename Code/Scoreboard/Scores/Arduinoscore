@@ -1,0 +1,9 @@
+// THIS FILE HOLDS THE CODE FOR THE AURDUINO
+// USES segmentled.h TO CONTROL THE LED STRING
+#include fastled.h
+
+// set key variables
+// pin driving the led chain
+CONST LEDPIN = 3
+// number of LEDS per segment ( assuming 9 segment score )
+CONST SEGMENTSIZE = 5
