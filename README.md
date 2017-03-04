@@ -1,5 +1,7 @@
 # Scoreboard
 
+*** update 4th Mar 2017 - prototype 1 well received - starting to think of next steps ***
+
 -- A project to self build an electronic scoreboard for Wallingford Hockey Club --
 
 A commercial scoreboard appears to be out of reach - lets build one!!
@@ -27,3 +29,5 @@ Indicator of 1st 2nd half or 1st 2nd 3rd 4th quarter
 As a stretch goal could be interrogated remotely ( not from the pitch side) to ask the current score
 
 see the wiki for more info and plans
+
+
