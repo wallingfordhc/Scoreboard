@@ -113,12 +113,19 @@ int LedSegmentMap[4][7][8] =  {
 #define WHITE  0xFFFFFF
 #define OFF    0X000000
 
+
+// MAIN SETUP FUNCTION
 void setup() {
-Serial.begin(9600);
-Serial.println("Hello");
-   
-   
+
+// SETUP SERIAL CONNECTION
+   Serial.begin(9600);
+
+// SETUP REAL TIME CLOCK 
    setupRTC ();
+   
+// SETUP GSM SIM
+
+// SETUP DISPLAY
    ClockMode = "Timer";
         strip.begin();
         strip.setBrightness(Brightness);
