@@ -1,7 +1,12 @@
-#include <RTClib.h>
+// MAIN CODE FOR WALLINGFORD HC SCOREBOARD
+// MARCH 2017 VERSION 1.0
+// DAVID SHANNON
 
-#include <Adafruit_NeoPixel.h>
-#include <Wire.h> 
+// INCLUDE REQUIRED HEADER FILES
+
+#include <RTClib.h> //REAL TIME CLOCK FILE
+#include <Adafruit_NeoPixel.h> // LED STRIP FILE ? CHANGE FOR FASTLED.IO?
+#include <Wire.h> // NOT SURE WHAT
 
 
 RTC_DS1307 RTC;
@@ -29,8 +34,8 @@ long Timer [4][3]; // timer array, holds , starttime, duration, color
 #define PIN      8 // data pin for LED strip
 #define N_LEDS 180
 
-Adafruit_NeoPixel strip = Adafruit_NeoPixel(N_LEDS, PIN, NEO_GRB + NEO_KHZ800);
-
+Adafruit_NeoPixel strip = Adafruit_NeoPixel(N_LEDS, PIN, NEO_GRB NO+ NEO_KHZ800);
+S
 
 
 // 7 segments set up as
