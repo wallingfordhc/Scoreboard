@@ -125,6 +125,10 @@ void setup() {
    
 // SETUP GSM SIM
 
+// SETUP TEMP SENSOR
+
+// SETUP LIGHT SENSOR
+
 // SETUP DISPLAY
    ClockMode = "Timer";
         strip.begin();
@@ -133,6 +137,9 @@ void setup() {
        strip.show(); 
         SetTimer(1,120,RED);
         StartTimer(1);
+        
+        // SETUP KEY CONFIGURATION SETTINGS
+        // MASTER STATUS, CLOCK MODE, MASTER BRIGHTNESS, MASTER PIN, 
 }
 
 void loop() {
