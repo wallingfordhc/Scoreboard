@@ -144,6 +144,8 @@ void setup() {
 
 void loop() {
 
+// EVERY CYCLE CHECK FOR CUURENT MODE AND DISPLAY APPROPRIATELY
+
 if (ClockMode == "Test"){
 TestRun();
 
@@ -159,6 +161,8 @@ if (ClockMode == "Clock"){
 
 delay(500); // delay to make sure everythign responds
 }
+
+// FUNCTION TO SET THE CLOCK DIGITS
 void SetDigits(int digit0,int digit1, int digit2, int digit4){
   setDigit( 0, digit0, TimerColor);
   setDigit( 1, digit1, TimerColor);
@@ -166,6 +170,7 @@ void SetDigits(int digit0,int digit1, int digit2, int digit4){
   setDigit( 3, digit4, TimerColor);
 }
 
+// FUNCTION TO SET AND SHOW ANY SINGLE DIGIT 
 void setDigit(int digit, int value, uint32_t color) {
         int ledsPerSeg = 8;
 
@@ -177,6 +182,7 @@ void setDigit(int digit, int value, uint32_t color) {
         strip.show();
 }
 
+// SET A TIMER IN MEMORY TO A GIVEN NUMBER OF SECONDS
 void SetTimer(int TimerNumber,int secs, uint32_t color) {
 
 TimerDuration = secs;
@@ -184,6 +190,7 @@ TimerStatus = "Set";
 
 }
 
+// FUNCTION TO START A PARTICULAR TIMER
 void StartTimer(int TimerNumber) {
 
 //DateTime now=RTC.now();
@@ -192,10 +199,9 @@ TimeNow = millis()/1000;
 TimerStartTime = TimeNow;
  TimerStatus = "Running";
 
-
-
 }
 
+// FUNCTION TO SHOW A PARTICULAR TIMER ON THE CLOCK DISPLAY
 void ShowTimer(int TimerNumber) {
 
 // DateTime now=RTC.now();
@@ -216,6 +222,7 @@ else
 }
 }
 
+// FUNCTION TO SHOW CURRENT TIME ON CLOCK DIGITS
 void ShowClock(){
   DateTime now=RTC.now();
 
@@ -232,6 +239,7 @@ void ShowClock(){
   SetDigits(Digit1,Digit2,Digit3,Digit4);
 }
 
+// FUNCTION TO INITIAILISE AND SET THE REAL TIME CLOCK
 void setupRTC () {
   Wire.begin();
   RTC.begin();
@@ -246,9 +254,10 @@ void setupRTC () {
   }
 }
 
+// FUNCTION TO EXTRACT YEAR/month/day/hour/minute components from RTC FEED
 void loopRTC() {
+
     DateTime now = RTC.now();
-    
     String timeStr = String(now.year()) + ", ";
     timeStr = timeStr + String(now.month()) + ", ";
     timeStr = timeStr + String(now.day()) + ", ";
@@ -259,11 +268,12 @@ void loopRTC() {
    
 }
 
+// FUNCTION TO RUN THROUGH THE DIGITS TESTING THAT THEY FUNCTION CORRECTLY
 void TestRun() {
 for (int digit=0; digit<4;digit ++){
  for (int i=0; i<11; i++){ 
     setDigit(digit,i,RED);
     delay(500);
+    }
   }
-}
 }
