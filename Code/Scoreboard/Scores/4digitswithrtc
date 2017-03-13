@@ -11,8 +11,24 @@
 
 RTC_DS1307 RTC;
 
-int Brightness = 64;
-const int ledsPerStrip = 60;
+#define PIN      8 // data pin for LED strip
+
+
+
+// MAIN SETUP FUNCTION
+void setup() {
+
+// SETUP REFRESH SPEED - HOW OFTEN SHOULD SMS ETC BE CHECKED
+
+// SETUP SERIAL CONNECTION
+   Serial.begin(9600);
+
+// SETUP REAL TIME CLOCK 
+   setupRTC ();
+   
+// SETUP TIMER 
+
+// TIMER STOP POINT - the lower limit for the timer. e.g. stop at 2 mins to give the umpire the final say
 
 String ClockMode  ;
 String TimerStatus ;
@@ -31,8 +47,27 @@ uint32_t TimerColor = 0xFF0000;
 long Timer [4][3]; // timer array, holds , starttime, duration, color
 
 
-#define PIN      8 // data pin for LED strip
+// SETUP GSM SIM
+
+// SETUP TEMP SENSOR
+
+// SETUP LIGHT SENSOR
+
+// SETUP DISPLAY
+
 #define N_LEDS 180
+
+#define RED    0xFF0000
+#define GREEN  0x00FF00
+#define BLUE   0x0000FF
+#define YELLOW 0xFFFF00
+#define PINK   0xFF1088
+#define ORANGE 0xE05800
+#define WHITE  0xFFFFFF
+#define OFF    0X000000
+
+int Brightness = 64;
+const int ledsPerStrip = 60;
 
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(N_LEDS, PIN, NEO_GRB NO+ NEO_KHZ800);
 S
@@ -45,8 +80,6 @@ S
 //  11111
 //  5   7
 //  66666
-
-
 
 int SegmentsActive[11][7] =  {
         {0,1,1,1,1,1,1}, //value 0
@@ -61,7 +94,6 @@ int SegmentsActive[11][7] =  {
         {1,1,1,1,0,0,1},  //value 9
         {0,0,0,0,0,0,0}  //value 10
 };
-
 int LedSegmentMap[4][7][8] =  { 
         {//first digit
                 {0,1,2,3,4,4,4,4}, // segment 0
@@ -104,35 +136,6 @@ int LedSegmentMap[4][7][8] =  {
         }
 };                          
 
-#define RED    0xFF0000
-#define GREEN  0x00FF00
-#define BLUE   0x0000FF
-#define YELLOW 0xFFFF00
-#define PINK   0xFF1088
-#define ORANGE 0xE05800
-#define WHITE  0xFFFFFF
-#define OFF    0X000000
-
-
-// MAIN SETUP FUNCTION
-void setup() {
-
-// SETUP REFRESH SPEED - HOW OFTEN SHOULD SMS ETC BE CHECKED
-
-// SETUP SERIAL CONNECTION
-   Serial.begin(9600);
-
-// SETUP REAL TIME CLOCK 
-   setupRTC ();
-   
-// SETUP TIMER STOP POINT - the lower limit for the timer. e.g. stop at 2 mins to give the umpire the final say
-// SETUP GSM SIM
-
-// SETUP TEMP SENSOR
-
-// SETUP LIGHT SENSOR
-
-// SETUP DISPLAY
    ClockMode = "Timer";
         strip.begin();
         strip.setBrightness(Brightness);
