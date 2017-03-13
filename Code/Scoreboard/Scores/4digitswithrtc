@@ -9,9 +9,9 @@
 #include <Wire.h> // NOT SURE WHAT
 
 
-RTC_DS1307 RTC;
 
-#define PIN      8 // data pin for LED strip
+
+#define LEDPIN      8 // data pin for LED strip
 
 
 
@@ -24,6 +24,7 @@ void setup() {
    Serial.begin(9600);
 
 // SETUP REAL TIME CLOCK 
+   RTC_DS1307 RTC;
    setupRTC ();
    
 // SETUP TIMER 
@@ -69,7 +70,7 @@ long Timer [4][3]; // timer array, holds , starttime, duration, color
 int Brightness = 64;
 const int ledsPerStrip = 60;
 
-Adafruit_NeoPixel strip = Adafruit_NeoPixel(N_LEDS, PIN, NEO_GRB NO+ NEO_KHZ800);
+Adafruit_NeoPixel strip = Adafruit_NeoPixel(N_LEDS, LEDPIN, NEO_GRB NO+ NEO_KHZ800);
 S
 
 
