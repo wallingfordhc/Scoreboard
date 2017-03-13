@@ -8,8 +8,7 @@
 #include <Adafruit_NeoPixel.h> // LED STRIP FILE ? CHANGE FOR FASTLED.IO?
 #include <Wire.h> // NOT SURE WHAT
 
-
-
+// PIN DEFINITIONS
 
 #define LEDPIN      8 // data pin for LED strip
 
@@ -20,6 +19,9 @@ void setup() {
 
 // SETUP REFRESH SPEED - HOW OFTEN SHOULD SMS ETC BE CHECKED
 
+int SMSCheckRate = 10 // CHECK FOR SMS EVERY 10 SECS
+int TEMPCheckRate = 600 // CHECK TEMPERATURE EVERY 10 MINS
+
 // SETUP SERIAL CONNECTION
    Serial.begin(9600);
 
@@ -29,10 +31,9 @@ void setup() {
    
 // SETUP TIMER 
 
-// TIMER STOP POINT - the lower limit for the timer. e.g. stop at 2 mins to give the umpire the final say
+int TimerLowerLimit = 120 // TIMER STOP POINT - the lower limit for the timer. e.g. stop at 2 mins to give the umpire the final say
 
-String ClockMode  ;
-String TimerStatus ;
+String TimerStatus = "Unset";
 
 long TimerStartTime = 0;
 long TimerDuration = 0;
@@ -41,7 +42,6 @@ long TimerDisplayTime = 0;
 long TimerDisplayMins = 0;
 long TimerDisplaySecs = 0;
 long TimerDisplayTenSecs = 0;
-
 
 uint32_t TimerColor = 0xFF0000;
 
@@ -55,6 +55,8 @@ long Timer [4][3]; // timer array, holds , starttime, duration, color
 // SETUP LIGHT SENSOR
 
 // SETUP DISPLAY
+
+string ClockMode = "Clock";
 
 #define N_LEDS 180
 
