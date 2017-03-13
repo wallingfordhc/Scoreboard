@@ -125,6 +125,7 @@ void setup() {
 // SETUP REAL TIME CLOCK 
    setupRTC ();
    
+// SETUP TIMER STOP POINT - the lower limit for the timer. e.g. stop at 2 mins to give the umpire the final say
 // SETUP GSM SIM
 
 // SETUP TEMP SENSOR
@@ -204,7 +205,7 @@ TimerStatus = "Set";
 // FUNCTION TO START A PARTICULAR TIMER
 void StartTimer(int TimerNumber) {
 
-//DateTime now=RTC.now();
+//DateTime now=RTC.now(); // dont use RtC IF ITS NOT CONNECTED
 //TimeNow = now.unixtime();
 TimeNow = millis()/1000;
 TimerStartTime = TimeNow;
@@ -212,13 +213,29 @@ TimerStartTime = TimeNow;
 
 }
 
+// FUNCTION TO RESET TIMER
+void resetTimer(int timer){
+
+}
+
+// FUNCTION TO SET VALUE OF TIMER
+void TimerValue(int timer){
+// DateTime now=RTC.now();
+// TimeNow = now.unixtime();
+
+if (timerstatus == "Running"){
+TimeNow = millis()/1000;
+TimerDisplayTime =  TimerStartTime - TimeNow + TimerDuration;
+}
+else {
+TimerDisplayTime = TimerDISPLAYTIME;
+}
+}
+
 // FUNCTION TO SHOW A PARTICULAR TIMER ON THE CLOCK DISPLAY
 void ShowTimer(int TimerNumber) {
 
-// DateTime now=RTC.now();
-// TimeNow = now.unixtime();
-TimeNow = millis()/1000;
-TimerDisplayTime =  TimerStartTime - TimeNow + TimerDuration;
+
 int TimerDisplayTenMins = TimerDisplayTime/600;
 TimerDisplayMins = (TimerDisplayTime/60)%10;
 TimerDisplayTenSecs = ((TimerDisplayTime%60)/10)%10;
