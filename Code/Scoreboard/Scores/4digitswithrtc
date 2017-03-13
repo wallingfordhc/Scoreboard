@@ -70,10 +70,8 @@ string DisplayMode = "Clock";
 #define OFF    0X000000
 
 int Brightness = 64;
-const int ledsPerStrip = 60;
 
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(N_LEDS, LEDPIN, NEO_GRB NO+ NEO_KHZ800);
-S
 
 
 // 7 segments set up as
@@ -97,6 +95,7 @@ int SegmentsActive[11][7] =  {
         {1,1,1,1,0,0,1},  //value 9
         {0,0,0,0,0,0,0}  //value 10
 };
+
 int LedSegmentMap[4][7][8] =  { 
         {//first digit
                 {0,1,2,3,4,4,4,4}, // segment 0
