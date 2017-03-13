@@ -11,8 +11,10 @@
 // PIN DEFINITIONS
 
 #define LEDPIN      8 // data pin for LED strip
-
-
+#define GSMTXPIN    9 // DATA PIN FOR TRANSMITTING MESSAGES TO GSM SIM
+#define GSMRXPIN    10 // DATA PIN FOR RECEIVING MESSAGES FROM GSM SIM
+#define TEMPPIN     11 // DATA PIN FOR TEMPERATURE SENSOR
+#define LIGHTPIN    12 // DATA PIN FOR LIGHT SENSOR
 
 // MAIN SETUP FUNCTION
 void setup() {
@@ -45,8 +47,6 @@ long TimerDisplayTenSecs = 0;
 
 uint32_t TimerColor = 0xFF0000;
 
-long Timer [4][3]; // timer array, holds , starttime, duration, color
-
 
 // SETUP GSM SIM
 
@@ -56,7 +56,7 @@ long Timer [4][3]; // timer array, holds , starttime, duration, color
 
 // SETUP DISPLAY
 
-string ClockMode = "Clock";
+string DisplayMode = "Clock";
 
 #define N_LEDS 180
 
@@ -139,16 +139,9 @@ int LedSegmentMap[4][7][8] =  {
         }
 };                          
 
-   ClockMode = "Timer";
         strip.begin();
         strip.setBrightness(Brightness);
-   SetDigits (10,10,10,10);         
-       strip.show(); 
-        SetTimer(1,120,RED);
-        StartTimer(1);
-        
-        // SETUP KEY CONFIGURATION SETTINGS
-        // MASTER STATUS, CLOCK MODE, MASTER BRIGHTNESS, MASTER PIN, 
+      
 }
 
 void loop() {
@@ -164,7 +157,7 @@ void loop() {
 
 // EVERY CYCLE CHECK FOR CURRENT MODE AND DISPLAY APPROPRIATELY
 
-if (ClockMode == "Test"){
+if (DisplayMode == "Test"){
 TestRun();
 
 }
