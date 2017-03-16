@@ -16,55 +16,9 @@
 #define GSMRXPIN    10 // DATA PIN FOR RECEIVING MESSAGES FROM GSM SIM
 #define TEMPPIN     11 // DATA PIN FOR TEMPERATURE SENSOR
 #define LIGHTPIN    12 // DATA PIN FOR LIGHT SENSOR
+#define MODEBUTTONPIN  6 // Data pin for mode button
 
-// define global variables
-
-String DisplayMode = "Off";
-RTC_DS1307 RTC;
-Adafruit_NeoPixel strip = Adafruit_NeoPixel(N_LEDS, LEDPIN, NEO_GRB NO+ NEO_KHZ800);
-
-
-// MAIN SETUP FUNCTION
-void setup() {
-
-// SETUP REFRESH SPEED - HOW OFTEN SHOULD SMS ETC BE CHECKED
-
-int SMSCheckRate = 10; // CHECK FOR SMS EVERY 10 SECS
-int TEMPCheckRate = 600; // CHECK TEMPERATURE EVERY 10 MINS
-
-// SETUP SERIAL CONNECTION
-   Serial.begin(9600);
-
-// SETUP REAL TIME CLOCK
-
-   setupRTC ();
-
-// SETUP TIMER
-
-int TimerLowerLimit = 120; // TIMER STOP POINT - the lower limit for the timer. e.g. stop at 2 mins to give the umpire the final say
-
-String TimerStatus = "Unset";
-
-long TimerStartTime = 0;
-long TimerDuration = 0;
-long TimeNow = 0;
-long TimerDisplayTime = 0;
-long TimerDisplayMins = 0;
-long TimerDisplaySecs = 0;
-long TimerDisplayTenSecs = 0;
-
-uint32_t TimerColor = 0xFF0000;
-
-
-// SETUP GSM SIM
-
-// SETUP TEMP SENSOR
-
-// SETUP LIGHT SENSOR
-
-// SETUP DISPLAY
-
-String DisplayMode = "Clock";
+// Define constants
 
 #define N_LEDS 180
 
@@ -76,9 +30,24 @@ String DisplayMode = "Clock";
 #define ORANGE 0xE05800
 #define WHITE  0xFFFFFF
 #define OFF    0X000000
+// define global variables
+
 
 int Brightness = 64;
+String TimerStatus = "Unset";
+long TimerStartTime = 0;
+long TimerDuration = 0;
+long TimeNow = 0;
+long Timer1 = 0;
+long SwitchOnTime;
 
+String DisplayMode = "Clock";
+uint32_t DisplayColor = RED;
+RTC_DS1307 RTC;
+Adafruit_NeoPixel strip = Adafruit_NeoPixel(N_LEDS, LEDPIN, NEO_GRB + NEO_KHZ800);
+
+
+// Font definitions ////////////////////////////
 // 7 segments set up as
 
 //  33333
@@ -87,7 +56,9 @@ int Brightness = 64;
 //  5   7
 //  66666
 
-int SegmentsActive[11][7] =  {
+int COLONLED = 81;
+
+int Font[11][7] =  {
         {0,1,1,1,1,1,1}, //value 0
         {0,1,0,0,0,0,1}, //value 1
         {1,1,1,0,1,1,0}, //value 2
@@ -143,10 +114,78 @@ int LedSegmentMap[4][7][8] =  {
         }
 };
 
-        strip.begin();
-        strip.setBrightness(Brightness);
+// Button timing variables
+int debounce = 20;          // ms debounce period to prevent flickering when pressing or releasing the button
+int DCgap = 250;            // max ms between clicks for a double click event
+int holdTime = 1000;        // ms hold period: how long to wait for press+hold event
+int longHoldTime = 3000;    // ms long hold period: how long to wait for press+hold event
+
+// Button variables
+boolean buttonVal = HIGH;   // value read from button
+boolean buttonLast = HIGH;  // buffered value of the button's previous state
+boolean DCwaiting = false;  // whether we're waiting for a double click (down)
+boolean DConUp = false;     // whether to register a double click on next release, or whether to wait and click
+boolean singleOK = true;    // whether it's OK to do a single click
+long downTime = -1;         // time the button was pressed down
+long upTime = -1;           // time the button was released
+boolean ignoreUp = false;   // whether to ignore the button release because the click+hold was triggered
+boolean waitForUp = false;        // when held, whether to wait for the up event
+boolean holdEventPast = false;    // whether or not the hold event happened already
+boolean longHoldEventPast = false;// whether or not the long hold event happened already
+
+
+
+
+// MAIN SETUP FUNCTION
+void setup() {
+
+// Set-up mode button pin
+   pinMode(MODEBUTTONPIN, INPUT);
+   digitalWrite(MODEBUTTONPIN, HIGH );
+
+
+// SETUP REFRESH SPEED - HOW OFTEN SHOULD SMS ETC BE CHECKED
+
+int SMSCheckRate = 10; // CHECK FOR SMS EVERY 10 SECS
+int TEMPCheckRate = 600; // CHECK TEMPERATURE EVERY 10 MINS
+
+// SETUP SERIAL CONNECTION
+   Serial.begin(9600);
+
+// SETUP REAL TIME CLOCK
+
+   setupRTC ();
+
+// SETUP TIMER
+
+int TimerLowerLimit = 120; // TIMER STOP POINT - the lower limit for the timer. e.g. stop at 2 mins to give the umpire the final say
+
+SetTimer(1,100); // Set timer 1 to 100 seconds
+StartTimer(1); // Start timer 1
+
+uint32_t TimerColor = 0xFF0000;
+
+
+// SETUP GSM SIM
+
+// SETUP TEMP SENSOR
+
+// SETUP LIGHT SENSOR
+
+// SETUP DISPLAY
+
+    strip.begin();
+    SetBrightness();
+
+
+// Serial.println("---------------");
+//  Serial.println(DisplayMode);
+
+
 
 }
+
+
 
 void loop() {
 
@@ -155,6 +194,12 @@ void loop() {
 //CHECK FOR SMS
 
 //CHECK FOR BUTTON PUSH
+
+int b=ButtonPress();
+
+if (b==1) ShowTimer(1);
+if (b==2) ShowClock();
+if (b==3) CycleBrightness();
 
   //BUILD IN DEBOUCED ASSESSMENT OF BUTTON STATUS
 
@@ -165,28 +210,34 @@ void loop() {
 
 // EVERY CYCLE CHECK FOR CURRENT MODE AND DISPLAY APPROPRIATELY
 
-if (DisplayMode == "Test"){
-TestRun();
+  Display(); // Show Stuff on the Digits
+}
+// end of Loop
 
-}
-        //Countdown timer
-if (DisplayMode == "Timer"){
-  Serial.println("hello");
-        ShowTimer(1);
-}
-if (DisplayMode == "Clock"){
-  ShowClock();
-}
+void Display() {
 
-delay(500); // delay to make sure everything responds
+  //Depending on the DisplayMode show appropriately on the Clock and Score Digits
+
+  //Test Mode
+  if (DisplayMode == "Test") {
+    ShowTest();
+  }
+  //Countdown timer mode
+  if (DisplayMode == "Timer") {
+    ShowTimer(1);
+  }
+  //Clock Mode
+  if (DisplayMode == "Clock") {
+    ShowClock();
+  }
 }
 
 // FUNCTION TO SET THE CLOCK DIGITS
 void SetDigits(int digit0,int digit1, int digit2, int digit4){
-  setDigit( 0, digit0, TimerColor);
-  setDigit( 1, digit1, TimerColor);
-  setDigit( 2, digit2, TimerColor);
-  setDigit( 3, digit4, TimerColor);
+  setDigit( 0, digit0, DisplayColor);
+  setDigit( 1, digit1, DisplayColor);
+  setDigit( 2, digit2, DisplayColor);
+  setDigit( 3, digit4, DisplayColor);
 }
 
 // FUNCTION TO SET AND SHOW ANY SINGLE DIGIT
@@ -195,14 +246,23 @@ void setDigit(int digit, int value, uint32_t color) {
 
         for (int seg = 0; seg < 7; seg++) {
                 for (int led = 0; led < ledsPerSeg; led++) {
-                        strip.setPixelColor(LedSegmentMap[digit][seg][led], SegmentsActive[value][seg] ? color : OFF);
+                        strip.setPixelColor(LedSegmentMap[digit][seg][led], Font[value][seg] ? color : OFF);
                 }
         }
         strip.show();
 }
 
+// FUNCTION TO SET AND SHOW THE COLON
+
+void setColon (int vlaue, uint32_t color) {
+
+
+  strip.setPixelColor(COLONLED,color);
+  strip.show();
+}
+
 // SET A TIMER IN MEMORY TO A GIVEN NUMBER OF SECONDS
-void SetTimer(int TimerNumber,int secs, uint32_t color) {
+void SetTimer(int TimerNumber,int secs) {
 
 TimerDuration = secs;
 TimerStatus = "Set";
@@ -212,9 +272,9 @@ TimerStatus = "Set";
 // FUNCTION TO START A PARTICULAR TIMER
 void StartTimer(int TimerNumber) {
 
-//DateTime now=RTC.now(); // dont use RtC IF ITS NOT CONNECTED
-//TimeNow = now.unixtime();
-TimeNow = millis()/1000;
+DateTime now=RTC.now(); // dont use RtC IF ITS NOT CONNECTED
+long TimeNow = now.unixtime();
+//long TimeNow = millis()/1000; dont use if RTC is connected
 TimerStartTime = TimeNow;
  TimerStatus = "Running";
 
@@ -226,30 +286,39 @@ void resetTimer(int timer){
 }
 
 // FUNCTION TO SET VALUE OF TIMER
-void TimerValue(int timer){
-// DateTime now=RTC.now();
-// TimeNow = now.unixtime();
+long TimerValue(int timer){
+DateTime now=RTC.now();
+long TimeNow = now.unixtime();
+long TimerShow=0;
 
-if (timerstatus == "Running"){
-TimeNow = millis()/1000;
-TimerDisplayTime =  TimerStartTime - TimeNow + TimerDuration;
+if (TimerStatus == "Running"){
+// TimeNow = millis()/1000;
+long TimerDisplayTime =  TimerStartTime - TimeNow + TimerDuration;
+Serial.print(TimerDisplayTime);
+TimerShow = TimerDisplayTime;
 }
 else {
-TimerDisplayTime = TimerDISPLAYTIME;
+// don't update the Timer Display Time
 }
+
+return TimerShow;
 }
 
 // FUNCTION TO SHOW A PARTICULAR TIMER ON THE CLOCK DISPLAY
 void ShowTimer(int TimerNumber) {
+ DisplayColor = GREEN;
 
+DisplayMode = "Timer";  // set the display mode in case it isnt yet set
 
+long TimerDisplayTime = TimerValue(1); //get the value to display
 int TimerDisplayTenMins = TimerDisplayTime/600;
-TimerDisplayMins = (TimerDisplayTime/60)%10;
-TimerDisplayTenSecs = ((TimerDisplayTime%60)/10)%10;
-TimerDisplaySecs = TimerDisplayTime%10;
+if (TimerDisplayTenMins==0) TimerDisplayTenMins = 10; // if zero set the Tens digit to OFF
+int TimerDisplayMins = (TimerDisplayTime/60)%10;
+int TimerDisplayTenSecs = ((TimerDisplayTime%60)/10)%10;
+int TimerDisplaySecs = TimerDisplayTime%10;
 
 if(TimerDisplayTime <= 0){
-  SetDigits(0,0,0,0);
+  SetDigits(10,0,0,0);
 }
 else
 {
@@ -259,6 +328,9 @@ else
 
 // FUNCTION TO SHOW CURRENT TIME ON CLOCK DIGITS
 void ShowClock(){
+DisplayColor = RED;
+  DisplayMode = "Clock";
+  // Serial.println("Show Clock");
   DateTime now=RTC.now();
 
   int Digit1 = (now.hour())/10;
@@ -266,10 +338,20 @@ void ShowClock(){
   int Digit3 = now.minute()/10;
   int Digit4 = now.minute()%10;
 
-  Serial.println(Digit1);
-  Serial.println(now.hour());
-  Serial.println("---------------");
-  Serial.println(Digit2);
+  // Flash the COLON
+
+  if (millis()%1000 < 100) {
+    setColon(1,RED);
+  }
+  else
+  {
+    setColon  (0,OFF);
+  }
+
+ // Serial.println(Digit1);
+ // Serial.println(now.hour());
+ // Serial.println("---------------");
+ // Serial.println(Digit2);
 
   SetDigits(Digit1,Digit2,Digit3,Digit4);
 }
@@ -280,13 +362,16 @@ void setupRTC () {
   RTC.begin();
   if (! RTC.isrunning()) {
     Serial.println("RTC is NOT running!");
-   // loopRTC();
     // following line sets the RTC to the date & time this sketch was compiled
-   // RTC.adjust(DateTime(F(__DATE__), F(__TIME__)));
+   RTC.adjust(DateTime(F(__DATE__), F(__TIME__)));
   }
   if(RTC.isrunning()){
-   //loopRTC();
+   Serial.println("RTC is running!");
   }
+  loopRTC();
+  DateTime now=RTC.now();
+  long TimeNow = now.unixtime();
+  SwitchOnTime = TimeNow;
 }
 
 // FUNCTION TO EXTRACT YEAR/month/day/hour/minute components from RTC FEED
@@ -304,11 +389,94 @@ void loopRTC() {
 }
 
 // FUNCTION TO RUN THROUGH THE DIGITS TESTING THAT THEY FUNCTION CORRECTLY
-void TestRun() {
+void ShowTest() {
 for (int digit=0; digit<4;digit ++){
  for (int i=0; i<11; i++){
     setDigit(digit,i,RED);
     delay(500);
     }
   }
+}
+
+int ButtonPress()
+{
+   int event = 0;
+   buttonVal = digitalRead(MODEBUTTONPIN);
+   // Button pressed down
+   if (buttonVal == LOW && buttonLast == HIGH && (millis() - upTime) > debounce)
+   {
+       downTime = millis();
+       ignoreUp = false;
+       waitForUp = false;
+       singleOK = true;
+       holdEventPast = false;
+       longHoldEventPast = false;
+       if ((millis()-upTime) < DCgap && DConUp == false && DCwaiting == true)  DConUp = true;
+       else  DConUp = false;
+       DCwaiting = false;
+   }
+   // Button released
+   else if (buttonVal == HIGH && buttonLast == LOW && (millis() - downTime) > debounce)
+   {
+       if (not ignoreUp)
+       {
+           upTime = millis();
+           if (DConUp == false) DCwaiting = true;
+           else
+           {
+               event = 2;
+               DConUp = false;
+               DCwaiting = false;
+               singleOK = false;
+           }
+       }
+   }
+   // Test for normal click event: DCgap expired
+   if ( buttonVal == HIGH && (millis()-upTime) >= DCgap && DCwaiting == true && DConUp == false && singleOK == true && event != 2)
+   {
+       event = 1;
+       DCwaiting = false;
+   }
+   // Test for hold
+   if (buttonVal == LOW && (millis() - downTime) >= holdTime) {
+       // Trigger "normal" hold
+       if (not holdEventPast)
+       {
+           event = 3;
+           waitForUp = true;
+           ignoreUp = true;
+           DConUp = false;
+           DCwaiting = false;
+           //downTime = millis();
+           holdEventPast = true;
+       }
+       // Trigger "long" hold
+       if ((millis() - downTime) >= longHoldTime)
+       {
+           if (not longHoldEventPast)
+           {
+               event = 4;
+               longHoldEventPast = true;
+           }
+       }
+   }
+   buttonLast = buttonVal;
+   return event;
+
+}
+
+void SetBrightness(){
+  
+
+
+    
+        strip.setBrightness(Brightness);
+}
+
+void CycleBrightness(){
+// get the current brightness and increase it to max then start at low
+Brightness = Brightness + 10;
+if (Brightness > 255) Brightness = 20;
+SetBrightness();
+  
 }
