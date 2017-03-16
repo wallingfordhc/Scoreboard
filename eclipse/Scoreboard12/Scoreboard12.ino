@@ -7,6 +7,7 @@
 #include <RTClib.h> //REAL TIME CLOCK FILE
 #include <Adafruit_NeoPixel.h> // LED STRIP FILE ? CHANGE FOR FASTLED.IO?
 #include <Wire.h> // NOT SURE WHAT
+#include <arduino.h>
 
 // PIN DEFINITIONS
 
@@ -16,24 +17,31 @@
 #define TEMPPIN     11 // DATA PIN FOR TEMPERATURE SENSOR
 #define LIGHTPIN    12 // DATA PIN FOR LIGHT SENSOR
 
+// define global variables
+
+String DisplayMode = "Off";
+RTC_DS1307 RTC;
+Adafruit_NeoPixel strip = Adafruit_NeoPixel(N_LEDS, LEDPIN, NEO_GRB NO+ NEO_KHZ800);
+
+
 // MAIN SETUP FUNCTION
 void setup() {
 
 // SETUP REFRESH SPEED - HOW OFTEN SHOULD SMS ETC BE CHECKED
 
-int SMSCheckRate = 10 // CHECK FOR SMS EVERY 10 SECS
-int TEMPCheckRate = 600 // CHECK TEMPERATURE EVERY 10 MINS
+int SMSCheckRate = 10; // CHECK FOR SMS EVERY 10 SECS
+int TEMPCheckRate = 600; // CHECK TEMPERATURE EVERY 10 MINS
 
 // SETUP SERIAL CONNECTION
    Serial.begin(9600);
 
 // SETUP REAL TIME CLOCK
-   RTC_DS1307 RTC;
+
    setupRTC ();
 
 // SETUP TIMER
 
-int TimerLowerLimit = 120 // TIMER STOP POINT - the lower limit for the timer. e.g. stop at 2 mins to give the umpire the final say
+int TimerLowerLimit = 120; // TIMER STOP POINT - the lower limit for the timer. e.g. stop at 2 mins to give the umpire the final say
 
 String TimerStatus = "Unset";
 
@@ -56,7 +64,7 @@ uint32_t TimerColor = 0xFF0000;
 
 // SETUP DISPLAY
 
-string DisplayMode = "Clock";
+String DisplayMode = "Clock";
 
 #define N_LEDS 180
 
@@ -70,9 +78,6 @@ string DisplayMode = "Clock";
 #define OFF    0X000000
 
 int Brightness = 64;
-
-Adafruit_NeoPixel strip = Adafruit_NeoPixel(N_LEDS, LEDPIN, NEO_GRB NO+ NEO_KHZ800);
-
 
 // 7 segments set up as
 
@@ -165,15 +170,15 @@ TestRun();
 
 }
         //Countdown timer
-if (ClockMode == "Timer"){
+if (DisplayMode == "Timer"){
   Serial.println("hello");
         ShowTimer(1);
 }
-if (ClockMode == "Clock"){
+if (DisplayMode == "Clock"){
   ShowClock();
 }
 
-delay(500); // delay to make sure everythign responds
+delay(500); // delay to make sure everything responds
 }
 
 // FUNCTION TO SET THE CLOCK DIGITS
