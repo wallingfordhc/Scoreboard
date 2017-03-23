@@ -1,5 +1,5 @@
 // MAIN CODE FOR WALLINGFORD HC SCOREBOARD
-// MARCH 2017 VERSION 1.1
+// MARCH 2017 VERSION 1.2
 // DAVID SHANNON
 
 // INCLUDE REQUIRED HEADER FILES
@@ -16,7 +16,10 @@
 #define GSMRXPIN    10 // DATA PIN FOR RECEIVING MESSAGES FROM GSM SIM
 #define TEMPPIN     11 // DATA PIN FOR TEMPERATURE SENSOR
 #define LIGHTPIN    12 // DATA PIN FOR LIGHT SENSOR
-#define MODEBUTTONPIN  6 // Data pin for mode button
+#define HOMEPIN     13 // PIN FOR HOME GOAL BUTTON
+#define AWAYPIN     14 // PIN FOR AWAY GOAL BUTTON
+#define MODEPIN     15 // PIN FOR MODE BUTTON
+#define SETPIN      16 // PIN FOR SET BUTTON
 
 // Define constants
 
@@ -397,11 +400,11 @@ for (int digit=0; digit<4;digit ++){
     }
   }
 }
-
-int ButtonPress()
+// function to return the state of a button
+int ButtonPress(int ButtonPIN)
 {
    int event = 0;
-   buttonVal = digitalRead(MODEBUTTONPIN);
+   buttonVal = digitalRead(ButtonPIN);
    // Button pressed down
    if (buttonVal == LOW && buttonLast == HIGH && (millis() - upTime) > debounce)
    {
