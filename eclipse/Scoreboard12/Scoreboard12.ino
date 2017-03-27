@@ -36,7 +36,7 @@
 // define global variables
 
 
-int Brightness = 64;
+int DefaultBrightness = 64;
 String TimerStatus = "Unset";
 long TimerStartTime = 0;
 long TimerDuration = 0;
@@ -469,9 +469,17 @@ int ButtonPress(int ButtonPIN)
 }
 
 void SetBrightness(){
-  
 
-
+   int Brightness == DefaultBrightness; // set brightness to default level
+// IF DISPLY MODE IS 'FLASH' 1THEN WORK OUT IF THE LIGHTS ARE ON OR OFF
+long flashFrequency = 200 // milliseconds between flashes
+        long flashLength = 100 // milliseconds the flash lasts
+        
+        if (DisplayFlash){ // if the display should be flashing
+                if (millis()%flashfrequency>flashLength){ // and if the flash should be off
+                        Brightness == 0; // set brightness to zero
+                }
+        } 
     
         strip.setBrightness(Brightness);
 }
